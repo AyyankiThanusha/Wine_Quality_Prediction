@@ -1,20 +1,20 @@
 import streamlit as st
 import pickle
-import numpy as np
+import pandas as pd
 
 st.title("🍷 Wine Quality Prediction App")
 
-# Load the trained model from pickle file
+# Load model
 try:
     with open("wine_quality_model.pkl", "rb") as f:
         model = pickle.load(f)
 except FileNotFoundError:
-    st.error("Model file not found! Please ensure wine_quality_model.pkl is in the same directory as this app.")
+    st.error("Model file not found! Ensure wine_quality_model.pkl is present.")
     st.stop()
 
 st.write("Enter wine chemical properties:")
 
-# Input fields - exactly matching your dataset columns (11 features)
+# Inputs (11 features)
 fixed_acidity = st.number_input("Fixed Acidity", value=7.4)
 volatile_acidity = st.number_input("Volatile Acidity", value=0.7)
 citric_acid = st.number_input("Citric Acid", value=0.0)
@@ -27,21 +27,21 @@ pH = st.number_input("pH", value=3.51)
 sulphates = st.number_input("Sulphates", value=0.56)
 alcohol = st.number_input("Alcohol", value=9.4)
 
-# Predict button
 if st.button("Predict Wine Quality"):
-    sample_data = np.array([
-        fixed_acidity,
-        volatile_acidity,
-        citric_acid,
-        residual_sugar,
-        chlorides,
-        free_sulfur_dioxide,
-        total_sulfur_dioxide,
-        density,
-        pH,
-        sulphates,
-        alcohol
-    ]).reshape(1, -1)
+    # Create DataFrame with correct feature names
+    input_data = pd.DataFrame([{
+        "fixed acidity": fixed_acidity,
+        "volatile acidity": volatile_acidity,
+        "citric acid": citric_acid,
+        "residual sugar": residual_sugar,
+        "chlorides": chlorides,
+        "free sulfur dioxide": free_sulfur_dioxide,
+        "total sulfur dioxide": total_sulfur_dioxide,
+        "density": density,
+        "pH": pH,
+        "sulphates": sulphates,
+        "alcohol": alcohol
+    }])
 
-    prediction = model.predict(sample_data)
-    st.success(f"🍷 Predicted Wine Quality Class: {prediction[0]}")
+    prediction = model.predict(input_data)
+    st.success(f"🍷 Predicted Wine Quality: {prediction[0]}")
